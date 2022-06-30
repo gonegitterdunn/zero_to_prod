@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout git repo to runner
         uses: actions/checkout@v2
+
       - name: Install rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -20,6 +21,7 @@ jobs:
           toolchain: stable
           # sets this toolchain as an override for the current directory
           override: true
+
       - name: Run 'cargo test'
         uses: actions-rs/cargo@v1
         with:
@@ -31,6 +33,7 @@ jobs:
     steps:
       - name: Checkout git repo to runner
         uses: actions/checkout@v2
+
       - name: Install rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -39,6 +42,7 @@ jobs:
           components: rustfmt
           # sets this toolchain as an override for the current directory
           override: true
+
       - name: Run 'cargo fmt'
         uses: actions-rs/cargo@v1
         with:
@@ -52,6 +56,7 @@ jobs:
     steps:
       - name: Checkout git repo to runner
         uses: actions/checkout@v2
+
       - name: Install rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -60,6 +65,7 @@ jobs:
           components: clippy
           # sets this toolchain as an override for the current directory
           override: true
+
       - name: Run 'cargo clippy'
         uses: actions-rs/clippy-check@v1
         with:
@@ -83,7 +89,7 @@ jobs:
           override: true
 
       - name: Run 'cargo tarpaulin'
-        uses: actions-rs/tarpaulink@v0.1
+        uses: actions-rs/tarpaulin@v0.1
         with:
           # ignores test function lines when collecting coverage
           args: '--ignore-tests'
