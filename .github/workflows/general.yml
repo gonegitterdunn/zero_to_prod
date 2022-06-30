@@ -7,7 +7,7 @@ env:
 
 jobs:
   test:
-    name: Test
+    name: unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout git repo to runner
@@ -27,8 +27,29 @@ jobs:
         with:
           command: test
 
+  coverage:
+    name: test coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repo to runner
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          # sets this toolchain as an override for the current directory
+          override: true
+
+      - name: Run 'cargo tarpaulin'
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          # ignores test function lines when collecting coverage
+          args: '--ignore-tests'
+
   fmt:
-    name: rustfmt
+    name: formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout git repo to runner
@@ -51,7 +72,7 @@ jobs:
           args: --all -- --check
 
   clippy:
-    name: Clippy
+    name: linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout git repo to runner
@@ -72,24 +93,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # set lint denied
           args: -- -D warnings
-
-  coverage:
-    name: Code coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout git repo to runner
-        uses: actions/checkout@v2
-
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          # sets this toolchain as an override for the current directory
-          override: true
-
-      - name: Run 'cargo tarpaulin'
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          # ignores test function lines when collecting coverage
-          args: '--ignore-tests'
