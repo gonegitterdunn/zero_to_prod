@@ -66,3 +66,24 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # set lint denied
           args: -- -D warnings
+
+  coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repo to runner
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          # sets this toolchain as an override for the current directory
+          override: true
+
+      - name: Run 'cargo tarpaulin'
+        uses: actions-rs/tarpaulink@v0.1
+        with:
+          # ignores test function lines when collecting coverage
+          args: '--ignore-tests'
