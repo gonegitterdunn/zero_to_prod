@@ -1,0 +1,8 @@
+{
+  // So that sql files aren't autoformatted on save
+  "editor.formatOnSave": false,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+},
+}
