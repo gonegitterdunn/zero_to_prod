@@ -16,12 +16,12 @@ name = "zero_to_prod"
 actix-web = "4"
 serde = { version = "1", features = ["derive"] }
 sqlx = { version = "0.6.0", features = [
-  "macros",
-  "chrono",
-  "runtime-actix-rustls",
-  "postgres",
-  "uuid",
-  "migrate",
+  "macros",               # gives us sqlx::query! and sqlx::query_as!
+  "chrono",               # support for mapping sql timestamptz to DateTime<T> from chrono crate
+  "runtime-actix-rustls", # use actix as runtime for futures and rustls as TLS backend
+  "postgres",             # gives unique postgres functionality
+  "uuid",                 # allows mapping sql uuids to the Uuid type from uuid crate
+  "migrate",              # same functionality as sqlx-cli for managing migrations -> useful for tests
 ], default-features = false }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
