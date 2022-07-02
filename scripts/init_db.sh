@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# print commands and their args as they're executed
-set -x
-# -e = exit immediately if comman exits with non-zero status
+
+# -x = print commands and their args as they're executed
+# -e = exit immediately if command exits with non-zero status
 # -o pipefail = return value = last command to exit with non-zero status or zero if exits successfully
-set -eo pipefail
+set -xeo pipefail
 
 # if psql isn't installed, exits script
 if ! [ -x "$(command -v psql)" ]; then
@@ -21,7 +21,7 @@ if ! [ -x "$(command -v sqlx)" ]; then
 fi
 
 # Check if a custom user has been set, otherwise default to 'postgres'
-DB_USER=${POSTGRES_USER:=postgres}
+DB_USER="${POSTGRES_USER:=postgres}"
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
 DB_NAME="${POSTGRES_DB:=newsletter}"
 DB_PORT="${POSTGRES_PORT:=5432}"
