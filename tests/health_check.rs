@@ -25,13 +25,12 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
     // Load configuration
     let configuration = get_configuration().expect("Failed to load configuration.yml");
-    let wal = configuration.database.get_connection_string();
+    let connection_string = configuration.database.get_connection_string();
 
     // Connect to db
     // Must import sqlx::{PgConnection, Connection}
     // Connection is required for PgConnection and not an inherent method of the struct
-    println!("{}", wal);
-    let mut connection = PgConnection::connect(wal.as_str())
+    let mut connection = PgConnection::connect(connection_string.as_str())
         .await
         .expect("Failed to connect to Postgres");
 
