@@ -89,13 +89,28 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
+pub struct TestApp {
+    pub address: String,
+    pub db_pool: PgPool,
+}
+
 // need to start the application in the background on a random port
 // need the url to run the test request against
-fn spawn_app() -> String {
+fn spawn_app() -> TestApp {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind to random port");
     let port = listener.local_addr().unwrap().port();
-    let server = run(listener).expect("Failed to bind address");
+    let address = format!("http://127.0.0.1:{}", port);
+
+    let configuration = get_configuration().expect("Failed to read configuration");
+    let connection_pool = PgPool::connect(&configuration.database.get_connection_string())
+        .await
+        .expect("Failed to connect to postgres");
+
+    let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
     let _ = tokio::spawn(server);
 
-    format!("http://127.0.0.1:{}", port)
+    TestApp {
+        address,
+        db_pool: connection_pool,
+    }
 }
