@@ -25,6 +25,10 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
     }
 }
 
+// #[tracing::instrument(
+//     name = "Saving new subscriberb details in the database",
+//     skip(pool, form)
+// )]
 #[tracing::instrument(
     name = "Saving new subscriber details in the database",
     skip(form, pool)
@@ -43,7 +47,6 @@ pub async fn insert_subscriber(pool: &PgPool, form: &FormData) -> Result<(), sql
     // .get_ref() returns an immutable reference to the PgConnection in web::Data
     .execute(pool)
     .await
-    // instrument is used with futures
     .map_err(|e| {
         tracing::error!("Failed to execute query: {:?}", e);
         e

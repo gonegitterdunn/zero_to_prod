@@ -18,14 +18,6 @@ chrono = "0.4.15"
 config = "0.11"
 secrecy = { version = "0.8", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
-sqlx = { version = "0.5.7", features = [
-  "macros",               # gives us sqlx::query! and sqlx::query_as!
-  "chrono",               # support for mapping sql timestamptz to DateTime<T> from chrono crate
-  "runtime-actix-rustls", # use actix as runtime for futures and rustls as TLS backend
-  "postgres",             # gives unique postgres functionality
-  "uuid",                 # allows mapping sql uuids to the Uuid type from uuid crate
-  "migrate",              # same functionality as sqlx-cli for managing migrations -> useful for tests
-], default-features = false }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-bunyan-formatter = "0.3"
@@ -33,6 +25,19 @@ tracing-log = "0.1"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 uuid = { version = "0.8.1", features = ["v4"] }
 tracing-actix-web = "0.5"
+
+[dependencies.sqlx]
+version = "0.5.7"
+default-features = false
+features = [
+  "runtime-actix-rustls", # use actix as runtime for futures and rustls as TLS backend
+  "macros",               # gives us sqlx::query! and sqlx::query_as!
+  "postgres",             # gives unique postgres functionality
+  "uuid",                 # allows mapping sql uuids to the Uuid type from uuid crate
+  "chrono",               # support for mapping sql timestamptz to DateTime<T> from chrono crate
+  "migrate",              # same functionality as sqlx-cli for managing migrations -> useful for tests
+  "offline",
+]
 
 [dev-dependencies]
 reqwest = "0.11"
