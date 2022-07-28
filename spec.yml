@@ -7,7 +7,7 @@ services:
     source_dir: .
     github:
       branch: main
-      deploy_on_push: true
+      deploy_on_push: false
       repo: gonegitterdunn/zero_to_prod
     health_check:
       http_path: /health_check
