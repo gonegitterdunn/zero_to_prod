@@ -1,4 +1,6 @@
 use secrecy::{ExposeSecret, Secret};
+use serde_aux::field_attributes::deserialize_number_from_string;
+use sqlx::postgres::PgConnectOptions;
 
 #[derive(serde::Deserialize)]
 pub struct Settings {
@@ -8,6 +10,7 @@ pub struct Settings {
 
 #[derive(serde::Deserialize)]
 pub struct ApplicationSettings {
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
 }
@@ -17,6 +20,7 @@ pub struct DatabaseSettings {
     pub username: String,
     pub password: Secret<String>,
     pub host: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub database_name: String,
 }
@@ -51,25 +55,16 @@ impl TryFrom<String> for Environment {
 }
 
 impl DatabaseSettings {
-    pub fn get_connection_string(&self) -> Secret<String> {
-        Secret::new(format!(
-            "postgres://{}:{}@{}:{}/{}",
-            self.username,
-            self.password.expose_secret(),
-            self.host,
-            self.port,
-            self.database_name
-        ))
+    pub fn with_db(&self) -> PgConnectOptions {
+        self.without_db().database(&self.database_name)
     }
 
-    pub fn get_connection_string_without_db(&self) -> Secret<String> {
-        Secret::new(format!(
-            "postgres://{}:{}@{}:{}",
-            self.username,
-            self.password.expose_secret(),
-            self.host,
-            self.port
-        ))
+    pub fn without_db(&self) -> PgConnectOptions {
+        PgConnectOptions::new()
+            .host(&self.host)
+            .username(&self.username)
+            .password(&self.password.expose_secret())
+            .port(self.port)
     }
 }
 
@@ -90,6 +85,10 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
 
     settings
         .merge(config::File::from(config_directory.join(environment.as_str())).required(true))?;
+
+    // Add in settings from env vars (with a prefix of APP and '__' as a separator)
+    // ex. 'APP_APPLICATION__PORT=5001' would set 'Settings.application.port'
+    settings.merge(config::Environment::with_prefix("app").separator("_"))?;
 
     // Try to convert config values into Settings type
     settings.try_into()
