@@ -1,9 +1,11 @@
+use once_cell::sync::Lazy;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use uuid::Uuid;
 use zero_to_prod::{
     configuration::{get_configuration, DatabaseSettings},
     startup::run,
+    telemetry::{get_subscriber, init_subscriber},
 };
 
 #[tokio::test]
@@ -90,6 +92,11 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
+static TRACING: Lazy<()> = Lazy::new(|| {
+    let subscriber = get_subscriber("test".into(), "info".into());
+    init_subscriber(subscriber);
+});
+
 pub struct TestApp {
     pub address: String,
     pub db_pool: PgPool,
@@ -98,18 +105,17 @@ pub struct TestApp {
 // need to start the application in the background on a random port
 // need the url to run the test request against
 async fn spawn_app() -> TestApp {
+    // The first time 'initialize' is invoked, the code in 'TRACING' is executed.
+    // Thereafter, execution will be skipped
+    Lazy::force(&TRACING);
+
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind to random port");
     let port = listener.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
 
     let mut configuration = get_configuration().expect("Failed to read configuration");
     configuration.database.database_name = Uuid::new_v4().to_string();
-
     let connection_pool = configure_database(&configuration.database).await;
-
-    PgPool::connect(&configuration.database.get_connection_string())
-        .await
-        .expect("Failed to connect to postgres");
 
     let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
     let _ = tokio::spawn(server);
@@ -141,4 +147,3 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
 
     connection_pool
 }
-
