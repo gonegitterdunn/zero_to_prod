@@ -35,6 +35,7 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
     )
     // .get_ref() returns an immutable reference to the PgConnection in web::Data
     .execute(pool.get_ref())
+    // instrument is used with futures
     .instrument(query_span)
     .await
     {

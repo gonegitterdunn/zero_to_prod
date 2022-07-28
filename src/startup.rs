@@ -4,18 +4,17 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 
 pub fn run(listener: TcpListener, pool: PgPool) -> Result<Server, std::io::Error> {
-    /**
-     * actix-web runtime spins up a new worker process for each available core.
-     * each worker runs its own copy of the app built by HttpServer.
-     *
-     * -> connection must therefore be cloneable (to be useable by each instance)
-     *
-     * -> web::Data<T> wraps <T> in an ARC (allowing cloneability)
-     *      the wrapped object is accessed through a cloned instance being passed to the .app_data() method on an App instance.
-     * 
-     * web::Data is an extractor -> extracts a PgConnection from the type map that actix-web uses to represent its app data
-     * -> sort of DEPENDENCY INJECTION
-     */
+    // actix-web runtime spins up a new worker process for each available core.
+    // each worker runs its own copy of the app built by HttpServer.
+    //
+    // -> connection must therefore be cloneable (to be useable by each instance)
+    //
+    // -> web::Data<T> wraps <T> in an ARC (allowing cloneability)
+    //      the wrapped object is accessed through a cloned instance being passed to the .app_data() method on an App instance.
+    //
+    // web::Data is an extractor -> extracts a PgConnection from the type map that actix-web uses to represent its app data
+    // -> sort of DEPENDENCY INJECTION
+    //
 
     // capture connection with 'move' from the surrounding environment to pass to app_data
     let connection = web::Data::new(pool);
