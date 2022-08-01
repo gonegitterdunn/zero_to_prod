@@ -1,3 +1,5 @@
+use std::ops::Sub;
+
 use unicode_segmentation::UnicodeSegmentation;
 
 pub struct SubscriberName(String);
@@ -5,6 +7,12 @@ pub struct SubscriberName(String);
 pub struct NewSubscriber {
     pub email: String,
     pub name: SubscriberName,
+}
+
+impl AsRef<str> for SubscriberName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 impl SubscriberName {
@@ -21,9 +29,5 @@ impl SubscriberName {
         } else {
             Self(s)
         }
-    }
-
-    pub fn inner_ref(&self) -> &str {
-        &self.0
     }
 }
