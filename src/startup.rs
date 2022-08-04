@@ -47,6 +47,7 @@ impl Application {
         self.port
     }
 
+    // the function only returns when the application stops
     pub async fn run_until_stopped(self) -> Result<(), std::io::Error> {
         self.server.await
     }
