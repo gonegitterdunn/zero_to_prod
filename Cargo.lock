@@ -2670,6 +2670,7 @@ dependencies = [
  "secrecy",
  "serde 1.0.141",
  "serde-aux",
+ "serde_json",
  "sqlx",
  "tokio",
  "tracing",

@@ -3,5 +3,5 @@ application:
 database:
   require_ssl: true
 email_client:
-  base_url: 'https://mandrillapp.com/api/1.0/users/ping'
-  sender_email: 'something@gmail.com'
+  base_url: 'https://api.mailgun.net/v3/sandbox2179c580c8784aebaa4dcd0ea6dae6b3.mailgun.org'
+  sender_email: 'mailgun@sandbox2179c580c8784aebaa4dcd0ea6dae6b3.mailgun.org'
