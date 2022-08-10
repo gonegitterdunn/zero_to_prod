@@ -150,7 +150,7 @@ pub async fn insert_subscriber(
         tracing::error!("Failed to execute query: {:?}", e);
         e
     })?;
-    Ok((subscriber_id))
+    Ok(subscriber_id)
 }
 
 fn generate_subscription_token() -> String {
