@@ -1,5 +1,6 @@
-use crate::routes::subscriptions::error_chain_fmt;
+use crate::{email_client::EmailClient, routes::subscriptions::error_chain_fmt};
 use actix_web::{http::StatusCode, web, HttpResponse, ResponseError};
+use anyhow::Context;
 use sqlx::PgPool;
 
 #[derive(serde::Deserialize)]
@@ -40,10 +41,25 @@ impl ResponseError for PublishError {
 }
 
 pub async fn publish_newsletter(
-    _body: web::Json<BodyData>,
+    body: web::Json<BodyData>,
     pool: web::Data<PgPool>,
+    email_client: web::Data<EmailClient>,
 ) -> Result<HttpResponse, PublishError> {
-    let _subscribers = get_confirmed_subscribers(&pool).await?;
+    let subscribers = get_confirmed_subscribers(&pool).await?;
+
+    for subscriber in subscribers {
+        email_client
+            .send_email(
+                subscriber.email,
+                &body.title,
+                &body.content.html,
+                &body.content.text,
+            )
+            .await
+            // with_context is lazy
+            .with_context(|| format!("Failed to send newsletter issue to {}", subscriber.email));
+    }
+
     Ok(HttpResponse::Ok().finish())
 }
 
