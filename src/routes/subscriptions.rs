@@ -197,12 +197,6 @@ pub enum SubscribeError {
     SendEmailError(#[from] reqwest::Error),
 }
 
-// impl From<String> for SubscribeError {
-//     fn from(e: String) -> Self {
-//         Self::ValidationError(e)
-//     }
-// }
-
 impl std::fmt::Debug for SubscribeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         error_chain_fmt(self, f)
