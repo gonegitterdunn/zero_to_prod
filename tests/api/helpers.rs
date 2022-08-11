@@ -49,7 +49,7 @@ impl TestApp {
 
     pub async fn post_newletters(&self, body: serde_json::Value) -> reqwest::Response {
         reqwest::Client::new()
-            .post(&format!("{}/newslsetters", &self.address))
+            .post(&format!("{}/newsletters", &self.address))
             .json(&body)
             .send()
             .await
