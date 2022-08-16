@@ -147,8 +147,11 @@ async fn validate_credentials(
         .await
         .map_err(PublishError::UnexpectedError)?
         .ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))?;
+
     let expected_password_hash = PasswordHash::new(&expected_password_hash.expose_secret())
+        .context("Failed to parase hash in PHC string format")
         .map_err(PublishError::UnexpectedError)?;
+
     tracing::info_span!("Verify password hash")
         .in_scope(|| {
             Argon2::default().verify_password(
@@ -158,6 +161,7 @@ async fn validate_credentials(
         })
         .context("Invalid password.")
         .map_err(PublishError::AuthError)?;
+        
     Ok(user_id)
 }
 
