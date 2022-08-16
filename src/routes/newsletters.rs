@@ -161,7 +161,7 @@ async fn validate_credentials(
         })
         .context("Invalid password.")
         .map_err(PublishError::AuthError)?;
-        
+
     Ok(user_id)
 }
 
