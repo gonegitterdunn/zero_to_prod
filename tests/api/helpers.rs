@@ -54,7 +54,7 @@ impl TestUser {
     }
 
     async fn store(&self, pool: &PgPool) {
-        let password_hash = sha3::Sha3_256::digest(credentials.password.expose_secret().as_bytes());
+        let password_hash = sha3::Sha3_256::digest(&self.password.as_bytes());
         let password_hash = format!("{:x}", password_hash);
 
         sqlx::query!(
