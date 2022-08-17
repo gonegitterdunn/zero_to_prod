@@ -1,3 +1,4 @@
+use crate::telemetry::spawn_blocking_with_tracing;
 use crate::{
     domain::SubscriberEmail, email_client::EmailClient, routes::subscriptions::error_chain_fmt,
 };
@@ -148,9 +149,11 @@ async fn validate_credentials(
         .map_err(PublishError::UnexpectedError)?
         .ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))?;
 
+    // executes before spawning the new thread
+    let current_span = tracing::Span::current();
     // since verifying the has takes ~10ms, move this cpu intensive task to a separate threadpool,
     // so it doesn't interfere with the scheduling of async tasks
-    tokio::task::spawn_blocking(move || {
+    spawn_blocking_with_tracing(move || {
         verify_password_hash(expected_password_hash, credentials.password)
     })
     .await
